@@ -1,5 +1,23 @@
-*{
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+body {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.player {
+  border: 1px sold #ccc;
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+}
+
+.player img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 20px;
 }
