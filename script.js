@@ -1,5 +1,5 @@
-const playerContainer = document.getElementById('all-players-container');
-const newPlayerFormContainer = document.getElementById('new-player-form');
+const playerContainer = document.querySelector('#all-players-container');
+const newPlayerFormContainer = document.querySelector('#new-player-form');
 
 // Add your cohort name to the cohortName variable below, replacing the 'COHORT-NAME' placeholder
 const cohortName = '2302-ACC-PT-WEB-PT-A';
@@ -13,21 +13,29 @@ const APIURL = `https://fsa-puppy-bowl.herokuapp.com/api/2302-ACC-PT-WEB-PT-A/pl
 const fetchAllPlayers = async () => {
     try {
         const response = await fetch(APIURL);
-        const players = await response.json();
-        return players;
+        const data = await response.json();
+
+        if (!Array.isArray(data.data.players)) {
+        console.warn('Uh oh, fetched player data is not an array!', data);
+        return [];
+      }
+
+      return data.data.players;
     } catch (err) {
-        console.error('Uh oh, trouble fetching players!', err);
+      console.error('Uh oh, trouble fetching players!', err);
+      return [];
     }
-};
+  };
+
 
 const fetchSinglePlayer = async (playerId) => {
     try {
         const requestOption = {
-            method: 'GET'
+            method: 'DELETE'
         }
         const response = await fetch(`${APIURL}/${playerId}`);
-        const player = await response.json();
-        return player;
+        const players = await response.json();
+        return players;
     } catch (err) {
         console.error(`Oh no, trouble fetching player #${playerId}!`, err);
     }
@@ -52,14 +60,17 @@ const addNewPlayer = async (playerObj) => {
 
 const removePlayer = async (playerId) => {
     try {
-        const response = await fetch(`${APIURL}/${playerId}`);
-        const player = await response.json();
-        return player;
+      const requestOption = {
+        method: 'DELETE',
+      };
+      const response = await fetch(`${APIURL}/${playerId}`, requestOption);
+      const players = await response.json();
+      return players;
     } catch (err) {
-        console.error(
-            `Whoops, trouble removing player #${playerId} from the roster!`,
-            err
-        );
+      console.error(
+        `Whoops, trouble removing player #${playerId} from the roster!`,
+        err
+      );
     }
 };
 
@@ -85,50 +96,67 @@ const removePlayer = async (playerId) => {
  */
 const renderAllPlayers = async (playerList) => {
     try {
-        playerContainer.innerHTML = '';
-        
-        //changing playerList to an array
-        const players = Array.from(playerList);
+      playerContainer.innerHTML = '';
 
-        players.forEach((player) => {
-          const playerElement = document.createElement('div');
+      if (!Array.isArray(playerList)) {
+        console.warn('Uh oh, playerList is not an array!', playerList);
+        return;
+      }
+
+      playerList.forEach((player) => {
+        const playerElement = document.createElement('div');
         playerElement.classList.add('player');
         playerElement.innerHTML = `
-        <h2>${player.id}</h2>
-        <h2>${player.name}</h2>
-        <h2>${player.breed}</h2>
-        <h2>${player.status}</h2>
-        <img src="${player.imageUrl}">
-        <h2>${player.createdAt}</h2>
-        <h2>${player.teadId}</h2>
-        <h2>${player.cohortId}</h2>
-        <button class="details-button" data-id="${player.id}">See Details</button>
-        <button class="remove-button" data-id="${player.id}">Remove from roster</button>
-        `;   
+          <h2>ID: ${player.id}</h2>
+          <h2>Name: ${player.name}</h2>
+          <h2>Breed: ${player.breed}</h2>
+          <h2 class="hidden">Status: ${player.status}</h2>
+          <img src="${player.imageUrl}">
+          <h2 class="hidden">Created At: ${player.createdAt}</h2>
+          <h2>Team ID: ${player.teamId}</h2>
+          <h2 class="hidden">Cohort ID: ${player.cohortId}</h2>
+          <button class="details-button" data-id="${player.id}">See Details</button>
+          <button class="remove-button" data-id="${player.id}">Remove from roster</button>
+          `;
         playerContainer.appendChild(playerElement);
 
-        // The event listeners are for the "See details"    
-            const detailsButton = playerElement.querySelector('.detailts-button');
-            detailsButton.addEventListener('click', async (event) => {
-                //get id
-                const playerId = event.target.dataset.id;
-                //send API to renderfetchSinglePlayer
-                fetchSinglePlayer(playerId);
-            });
-        // and "Remove from roster" buttons.
+        //hide element with class "hidden"
+        let hiddenElements = playerElement.querySelectorAll('.hidden');
+        hiddenElements.forEach((element) => {
+          element.style.display = 'none';
+        });
+
+        // The event listeners for the "See details" and "Remove from roster"
+        const detailsButton = playerElement.querySelector('.details-button');
         const removeButton = playerElement.querySelector('.remove-button');
+
+        detailsButton.addEventListener('click', async (event) => {
+          const playerId = event.target.dataset.id;
+          const player = await fetchSinglePlayer(playerId);
+          if (player) {
+            //display the details
+            let hiddenElements = playerElement.querySelectorAll('.hidden');
+            hiddenElements.forEach((element) => {
+                if (element.style.display === 'none') {
+                    element.style.display = '';
+                } else {
+                    element.style.display = 'none'
+                }
+            });
+          }
+
+        });
+
         removeButton.addEventListener('click', async (event) => {
-            //get id
-            const playerId = event.target.dataset.id;
-            //send API to renderfetchSinglePlayer
-            removePlayer(playerId);
-            init()
+          const playerId = event.target.dataset.id;
+          await removePlayer(playerId);
+          init(); // re-render all players after deleting one
         });
-        });
+      });
     } catch (err) {
-        console.error('Uh oh, trouble rendering players!', err);
+      console.error('Uh oh, trouble rendering players!', err);
     }
-};
+  };
 
 
 /**
@@ -138,36 +166,76 @@ const renderAllPlayers = async (playerList) => {
 const renderNewPlayerForm = async () => {
     try {
         const form = document.createElement('form');
+        
+        // create input fields for the form
+        form.innerHTML = `
+            <label>
+                ID:
+                <input type="text" name="id">
+            </label>
+            <label>
+                Name:
+                <input type="text" name="name">
+            </label>
+            <label>
+                Breed:
+                <input type="text" name="breed">
+            </label>
+            <label>
+                Status:
+                <input type="text" name="status">
+            </label>
+            <label>
+                Image URL:
+                <input type="text" name="imageUrl">
+            </label>
+            <label>
+                Created At:
+                <input type="text" name="createdAt">
+            </label>
+            <label>
+                Team ID:
+                <input type="text" name="teamId">
+            </label>
+            <label>
+                Cohort ID:
+                <input type="text" name="cohortId">
+            </label>
+            <button type="submit">Add Player</button>
+        `
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
-
             const playerObj = {
-                //getting  player object values
-            id: form.id.value,
-            name: form.name.value,
-            breed: form.breed.value,
-            status: form.status.value,
-            imageUrl: form.imageUrl.value,
-            createdAt: form.createdAt.value,
-            teamId: form.teadId.value,
-            cohortId: form.cohortId.value
+                id: form.id.value,
+                name: form.name.value,
+                breed: form.breed.value,
+                status: form.status.value,
+                imageUrl: form.imageUrl.value,
+                createdAt: form.createdAt.value,
+                teamId: form.teamId.value,
+                cohortId: form.cohortId.value
             };
-
+            
+            // Validate the playerObj before adding to the database
+            
             await addNewPlayer(playerObj);
+            
+            // re-fetch all players and render them again
             const players = await fetchAllPlayers();
             renderAllPlayers(players)
         });
 
-        //create form field ->
         newPlayerFormContainer.appendChild(form);
     } catch (err) {
         console.error('Uh oh, trouble rendering the new player form!', err);
     }
 }
 
+
+
 const init = async () => {
     const players = await fetchAllPlayers();
-    // console.log(players)
+    console.log(players)
     renderAllPlayers(players);
 
     await renderNewPlayerForm();
