@@ -110,10 +110,10 @@ const renderAllPlayers = async (playerList) => {
           <h2>ID: ${player.id}</h2>
           <h2>Name: ${player.name}</h2>
           <h2>Breed: ${player.breed}</h2>
-          <h2 class="hidden">Status: ${player.status}</h2>
           <img src="${player.imageUrl}">
+          <h2 class="hidden">Status: ${player.status}</h2>
           <h2 class="hidden">Created At: ${player.createdAt}</h2>
-          <h2>Team ID: ${player.teamId}</h2>
+          <h2 class="hidden">Team ID: ${player.teamId}</h2>
           <h2 class="hidden">Cohort ID: ${player.cohortId}</h2>
           <button class="details-button" data-id="${player.id}">See Details</button>
           <button class="remove-button" data-id="${player.id}">Remove from roster</button>
@@ -125,7 +125,7 @@ const renderAllPlayers = async (playerList) => {
         hiddenElements.forEach((element) => {
           element.style.display = 'none';
         });
-
+        
         // The event listeners for the "See details" and "Remove from roster"
         const detailsButton = playerElement.querySelector('.details-button');
         const removeButton = playerElement.querySelector('.remove-button');

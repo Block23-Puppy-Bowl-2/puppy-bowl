@@ -2,7 +2,7 @@
 body {
   font-family: Arial, sans-serif;
   background-color: #f8f8f8;
-  background-image:url(https://img.freepik.com/free-vector/frame-with-dogs-vector-white-background_53876-127700.jpg);
+  background-image:url(https://us1-prod-images.disco-api.com/2023/02/07/ea37d85d-398b-3f77-a021-9fa8ce3f172d.jpeg?bf=0&f=jpg&p=true&q=85&w=1920);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -22,12 +22,20 @@ body {
   flex-wrap: wrap;
 }
 
+/* Player section */
 .player {
   width: calc((100% / 3) - 20px);
   margin: 10px;
-  background-color: #fff;
+  padding: 20px;
+  background-color: rgba(255, 183, 0, 0.863);
   border-radius: 5px;
-  box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+  box-shadow: 0px 10px 30px 5px blue;
+  transform: translateY(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.player:hover {
+  transform: translateY(-10px);
 }
 
 .player img {
@@ -35,6 +43,8 @@ body {
   height: auto;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 50px 20px;
 }
 
 .player .player-info {
@@ -51,6 +61,15 @@ body {
   margin-bottom: 0;
 }
 
+/* Button for cards section */
+.details-button, .remove-button {
+  text-decoration: solid;
+  margin-top: 15px;
+  box-shadow: 0px -1px 10px 5px rgb(0, 60, 255);
+}
+.details-button {
+  margin-right: 22px;
+}
 .hidden .zoom {
   transition: transform 0.3s ease;
 }
@@ -60,12 +79,15 @@ body {
 }
 
 .hidden {
-  background-color: red;
+  background-color: rgb(0, 255, 128);
+  border-radius: 5px;
+  box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+  
 }
 
 /* Styles for form */
 #new-player-form {
-  background-color: #fff;
+  background-color: #ffffffd2;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
