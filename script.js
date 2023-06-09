@@ -238,8 +238,9 @@ const init = async () => {
     console.log(players)
     renderAllPlayers(players);
 
-    await renderNewPlayerForm();
+    
 
 }
+renderNewPlayerForm(); //put it outside the function so that it wont duplicate addNewPLayer form.
 
 init();
