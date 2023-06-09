@@ -170,10 +170,6 @@ const renderNewPlayerForm = async () => {
         // create input fields for the form
         form.innerHTML = `
             <label>
-                ID:
-                <input type="text" name="id">
-            </label>
-            <label>
                 Name:
                 <input type="text" name="name">
             </label>
