@@ -114,7 +114,6 @@ const renderAllPlayers = async (playerList) => {
           <h2 class="hidden">Status: ${player.status}</h2>
           <h2 class="hidden">Created At: ${player.createdAt}</h2>
           <h2 class="hidden">Team ID: ${player.teamId}</h2>
-          <h2 class="hidden">Cohort ID: ${player.cohortId}</h2>
           <button class="details-button" data-id="${player.id}">See Details</button>
           <button class="remove-button" data-id="${player.id}">Remove from roster</button>
           `;
@@ -193,10 +192,6 @@ const renderNewPlayerForm = async () => {
                 Team ID:
                 <input type="text" name="teamId">
             </label>
-            <label>
-                Cohort ID:
-                <input type="text" name="cohortId">
-            </label>
             <button type="submit">Add Player</button>
         `
         form.addEventListener('submit', async (event) => {
@@ -207,9 +202,9 @@ const renderNewPlayerForm = async () => {
                 breed: form.breed.value,
                 status: form.status.value,
                 imageUrl: form.imageUrl.value,
-                createdAt: form.createdAt.value,
+                createdAt: form.createdAt.valfe,
                 teamId: form.teamId.value,
-                cohortId: form.cohortId.value
+                cohortId: form.cohortId.valuef
             };
             
             // Validate the playerObj before adding to the database
